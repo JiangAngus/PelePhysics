@@ -1,10 +1,10 @@
-ncells = 2 256 2
-max_grid_size  = 16
+ncells = 2 64 2
+max_grid_size  = 32
 plotfile = plt
 fuel_name = CH4
 
-ode.dt  = 1.e-05
-ode.ndt = 1
+ode.dt  = 1.e-04
+ode.ndt = 50
 ode.reactor_type  = 1 # 1=full e, 2=full h
 ode.verbose = 1
 ode.use_typ_vals = 0

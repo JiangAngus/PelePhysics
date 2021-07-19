@@ -15,7 +15,7 @@
 
 #include <PlotFileFromMF.H>
 #include <PelePhysics.H>
-#include <reactor.h>
+#include <reactor.H>
 
 #ifndef USE_RK64_PP
 #ifdef USE_ARKODE_PP 
@@ -34,6 +34,7 @@ main (int   argc,
       char* argv[])
 {
   Initialize(argc,argv);
+
 #ifdef AMREX_USE_GPU
   amrex::sundials::MemoryHelper::Initialize(); /* TODO: this ideally (I think) will go in the amrex::Initialize */
 #endif
@@ -112,7 +113,7 @@ main (int   argc,
 #endif
 
 #ifdef AMREX_USE_GPU
-      reactor_info(ode_iE, ode_ncells);
+      reactor_init(ode_iE, ode_ncells);
 #else
       reactor_init(ode_iE, ode_ncells);
 #endif
@@ -205,7 +206,9 @@ main (int   argc,
         for (int i = 0; i < NUM_SPECIES; ++i) {
           typ_vals[i] = std::max(typ_vals[i],1.e-10);
         }
+#ifndef USE_ARKODE_PP
         SetTypValsODE(typ_vals);
+#endif
       }
     }
 
@@ -334,7 +337,8 @@ main (int   argc,
                   rhoY, frcExt, T,
                   rhoE, frcEExt,
                   fc, mask,
-                  dt_incr, time);
+                  dt_incr, time,ode_iE);
+      
 #endif
           dt_incr =  dt/ndt;
         }
@@ -388,7 +392,9 @@ main (int   argc,
     }
     
 #ifndef AMREX_USE_GPU
+#ifndef USE_ARKODE_PP
     reactor_close();
+#endif
 #endif
     pele::physics::transport::CloseTransport<
       pele::physics::PhysicsType::eos_type>()();

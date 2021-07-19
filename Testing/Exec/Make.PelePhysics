@@ -68,16 +68,29 @@ Bpack             += $(EOS_PATH)/Make.package
 Blocs             += $(EOS_PATH)
 
 # Reactions
-REACTIONS_PATH := $(REACTIONS_HOME)/$(strip $(Reactions_dir))
-include $(REACTIONS_PATH)/Make.package
-INCLUDE_LOCATIONS += $(REACTIONS_HOME) $(REACTIONS_PATH) 
-VPATH_LOCATIONS   += $(REACTIONS_HOME) $(REACTIONS_PATH) 
+include $(REACTIONS_HOME)/Make.package
+INCLUDE_LOCATIONS += $(REACTIONS_HOME)
+VPATH_LOCATIONS   += $(REACTIONS_HOME)
+EXTERN_CORE       += $(REACTIONS_HOME) 
+Bpack += $(REACTIONS_HOME)/Make.package
+Blocs += $(REACTIONS_HOME)
+ifeq ($(Reactor_dir), arkode)
+    USE_SUNDIALS_PP = TRUE
+    USE_ARKODE_PP = TRUE
+    Bpack += $(REACTIONS_HOME)/$(Reactor_dir)/Make.package
+    Blocs += $(REACTIONS_HOME)/$(Reactor_dir)
+endif
+ifeq ($(Reactor_dir), cvode)
+    USE_SUNDIALS_PP = TRUE
+    USE_CVODE_PP = TRUE
+    Bpack += $(REACTIONS_HOME)/$(Reactor_dir)/Make.package
+    Blocs += $(REACTIONS_HOME)/$(Reactor_dir)
+endif
 ifeq ($(USE_F90_PP),TRUE) 
     REACTIONS_HOME_F90 := $(REACTIONS_HOME)/F90
-    REACTIONS_PATH_F90 := $(REACTIONS_PATH)/F90
-    EXTERN_CORE       += $(REACTIONS_HOME_F90) $(REACTIONS_PATH_F90)  
-    INCLUDE_LOCATIONS += $(REACTIONS_HOME_F90) $(REACTIONS_PATH_F90)
-    VPATH_LOCATIONS   += $(REACTIONS_HOME_F90) $(REACTIONS_PATH_F90)
+    EXTERN_CORE        += $(REACTIONS_HOME_F90) 
+    INCLUDE_LOCATIONS  += $(REACTIONS_HOME_F90)
+    VPATH_LOCATIONS    += $(REACTIONS_HOME_F90)
 endif
 ifeq ($(Eos_dir), GammaLaw)
   ifneq ($(Chemistry_Model), Null)
